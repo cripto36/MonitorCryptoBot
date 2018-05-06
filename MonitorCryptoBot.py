@@ -208,7 +208,6 @@ def suicide(bot, update):
 		if(str(update.message.chat_id) == line[i].split(" ")[0]):
 			killme=1			
 			bot.send_message(chat_id=update.message.chat_id, text="Bot abbandonato, sei stato cancellato dal database")
-			bot.send_message(chat_id=str(youridtelegram), text= "L'utente " + str(update.message.from_user.username) + " ha abbandonato il bot")
 			if((i+1)<len(line)):
 				file_user_suicide.writelines(line[i+1])
 			else:
@@ -222,6 +221,8 @@ def suicide(bot, update):
 			else:			
 				file_user_suicide.writelines(line[i])
 	file_user_suicide.close()
+	if(killme==1):
+		bot.send_message(chat_id=str(youridtelegram), text= "L'utente " + str(update.message.from_user.username) + " ha abbandonato il bot")
 	if(killme==0):
 		bot.send_message(chat_id=update.message.chat_id, text="Non puoi abbandonare perchè non sei presente nel database")	
 
