@@ -31,6 +31,7 @@ def start(bot, update):
 		file_start_w.writelines(str(update.message.chat_id) + " " + str(1) + " " + str(update.message.from_user.username) + "\n")
 		bot.send_message(chat_id = update.message.chat_id, text = "Benvenuto " + str(update.message.from_user.username) + ",\nSei stato registrato nel database.\nAlert Abilitati")
 		file_start_w.close()
+		bot.send_message(chat_id = str(youridtelegram), text="Nuovo utente registrato: " + str(update.message.from_user.username))
 
 def max(bot, update):
 	file_vol = open("volume.txt", "r")
@@ -106,7 +107,7 @@ def stop(bot, update):
 			file_user_stop.writelines(line[i])
 	file_user_stop.close()
 	if(x==0):
-		bot.send_message(chat_id=update.message.chat_id, text="Nulla da disabilitare, non sei presenta nel database.\nPremi start per registrarti e avviare gli alert!")
+		bot.send_message(chat_id=update.message.chat_id, text="Nulla da disabilitare, non sei presente nel database.\nPremi /start per registrarti e avviare gli alert!")
 
 def resetuser(bot, update, args):
 	if(int(update.message.chat_id) == youridtelegram):
@@ -176,10 +177,10 @@ def stat(bot, update):
 		lista_id = {}
 		for c in range (0, len(line_user)):
 			if(int(line_user[c].split(" ")[1])==1):
-				lista_id[c] = line_user[c].upper().split(" ")[2].split("\n")[0]
+				lista_id[c] = line_user[c].split(" ")[2].split("\n")[0] + " ON"
 			if(int(line_user[c].split(" ")[1])==0):
-				lista_id[c] = line_user[c].split(" ")[2].split("\n")[0]
-		bot.send_message(chat_id = update.message.chat_id, text = "Maiuscolo == Alert Attivi\nMinuoscolo == Alert Disattivati\n" + str(lista_id))
+				lista_id[c] = line_user[c].split(" ")[2].split("\n")[0] + " OFF"
+		bot.send_message(chat_id = update.message.chat_id, text = "ON == Alert Attivati\nOFF == Alert Disattivati\n" + str(lista_id))
 	else:
 		x=0
 		file_user = open("user.txt", "r")
@@ -207,6 +208,7 @@ def suicide(bot, update):
 		if(str(update.message.chat_id) == line[i].split(" ")[0]):
 			killme=1			
 			bot.send_message(chat_id=update.message.chat_id, text="Bot abbandonato, sei stato cancellato dal database")
+			bot.send_message(chat_id=str(youridtelegram), text= "L'utente " + str(update.message.from_user.username) + " ha abbandonato il bot")
 			if((i+1)<len(line)):
 				file_user_suicide.writelines(line[i+1])
 			else:
@@ -303,13 +305,14 @@ def updatebot(bot, update, args):
 	else:
 		bot.send_message(chat_id=update.message.chat_id, text="Non sei abilitato per accedere a questa funzione")
 
+
 def unknown(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text="Comando inesistente, premi /help per vedere le possibili scelte.")
 
 
 
-bot = telegram.Bot(token='id(token)yourtelegrambot')
-updater = Updater(token='id(token)yourtelegrambot')
+bot = telegram.Bot(token=youridtokenbot)
+updater = Updater(token=youridtokenbot)
 dispatcher = updater.dispatcher	
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 start_handler = CommandHandler('start', start)
@@ -343,7 +346,6 @@ updatebot_handler = CommandHandler('updatebot', updatebot, pass_args=True)
 dispatcher.add_handler(updatebot_handler)
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
-
 
 while(1):
 	time.sleep(300)
