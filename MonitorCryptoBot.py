@@ -265,7 +265,7 @@ def ban(bot, update, args):
 			file_user_kill.close()
 			file_user_kill = open("user.txt", "w")
 			for i in range(0,len(line)):
-				if(ingresso[0] == line[i].split(" ")[2].split("\n")):
+				if(ingresso[0] == line[i].split(" ")[2].split("\n")[0]):
 					kill=1			
 					bot.send_message(chat_id=update.message.chat_id, text="User " + ingresso[0] + " has been canceled")
 					if((i+1)<len(line)):
