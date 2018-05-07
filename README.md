@@ -4,5 +4,5 @@
 
 https://t.me/MonitorCrypto_bot
 
-Questo bot nasce per monitorare l'andamento di Bitcoin, Ethereum e il Volume24h del mercato. È possibile abilitare degli Alert che calcolano la differenza tra prezzo massimo e prezzo attuale, se la differenza è < -20% si viene contattati dal bot con questo avviso.
-È possibile ovviamente disabilitare gli Alert e conoscere quando si vuole in tempo reale il prezzo delle Coin. Premi /help dopo aver avviato.
+This bot was created to monitor the performance of Bitcoin, Ethereum and the Volume24h of the marketcap. You can enable Alerts that calculate the difference between the maximum price and the current price, if the difference is <-20% you are contacted by the bot with this warning.
+You can of course disable the Alerts and know when you want in real time the price of Btc and Eth.
