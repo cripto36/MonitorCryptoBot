@@ -29,7 +29,7 @@ def start(bot, update):
 		for i in range(0, len(line)):
 			file_start_w.writelines(line[i])
 		file_start_w.writelines(str(update.message.chat_id) + " " + str(1) + " " + str(update.message.from_user.username) + "\n")
-		bot.send_message(chat_id = update.message.chat_id, text = "Welcome " + str(update.message.from_user.username) + ",\nYou have been registered.\nAlert Abilitati")
+		bot.send_message(chat_id = update.message.chat_id, text = "Welcome " + str(update.message.from_user.username) + ",\nYou have been registered.\nAlerts Enabled")
 		file_start_w.close()
 		bot.send_message(chat_id = str(myid().youridtelegram), text="New user registered: " + str(update.message.from_user.username))
 
@@ -107,7 +107,7 @@ def stop(bot, update):
 			file_user_stop.writelines(line[i])
 	file_user_stop.close()
 	if(x==0):
-		bot.send_message(chat_id=update.message.chat_id, text="You can't leave database because you are not registered")
+		bot.send_message(chat_id=update.message.chat_id, text="You can't stop database because you are not registered")
 
 def resetuser(bot, update, args):
 	if(int(update.message.chat_id) == myid().youridtelegram):
