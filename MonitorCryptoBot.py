@@ -31,7 +31,7 @@ def start(bot, update):
 		file_start_w.writelines(str(update.message.chat_id) + " " + str(1) + " " + str(update.message.from_user.username) + "\n")
 		bot.send_message(chat_id = update.message.chat_id, text = "Welcome " + str(update.message.from_user.username) + ",\nYou have been registered.\nAlerts Enabled")
 		file_start_w.close()
-		bot.send_message(chat_id = str(myid().youridtelegram), text="New user registered: " + str(update.message.from_user.username))
+		bot.send_message(chat_id = str(myid().youridtelegram), text="New user registered: @" + str(update.message.from_user.username))
 
 def max(bot, update):
 	file_vol = open("volume.txt", "r")
@@ -222,7 +222,7 @@ def suicide(bot, update):
 				file_user_suicide.writelines(line[i])
 	file_user_suicide.close()
 	if(killme==1):
-		bot.send_message(chat_id=str(myid().youridtelegram), text= "User " + str(update.message.from_user.username) + " left bot")
+		bot.send_message(chat_id=str(myid().youridtelegram), text= "User @" + str(update.message.from_user.username) + " left bot")
 	if(killme==0):
 		bot.send_message(chat_id=update.message.chat_id, text="You can't left bot, because you are not in")	
 
