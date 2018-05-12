@@ -359,7 +359,7 @@ unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
 
 while(1):
-	time.sleep(10)
+	time.sleep(300)
 	volume_24 = requests.get('https://api.coinmarketcap.com/v1/global').json()
 	eth_json = requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum').json()
 	btc_json = requests.get('https://api.coinmarketcap.com/v1/ticker/bitcoin').json()
