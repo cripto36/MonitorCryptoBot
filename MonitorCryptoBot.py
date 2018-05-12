@@ -7,6 +7,7 @@ import time
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
+from telegram.error import Unauthorized
 
 
 
@@ -300,11 +301,16 @@ def updatebot(bot, update, args):
 			lines = file_user.readlines()
 			file_user.close()
 			for c in range (0, len(lines)):
-				bot.send_message(chat_id=lines[c].split(" ")[0], text="Bot updated, type /help for info")
+				time.sleep(.100)
+				try:
+					bot.send_message(chat_id=lines[c].split(" ")[0], text="Bot updated, type /help for info")
+				except Unauthorized:
+					bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")
 		else:
 			bot.send_message(chat_id=update.message.chat_id, text="Insert parameter 1 = confirm")
 	else:
 		bot.send_message(chat_id=update.message.chat_id, text="You are not able to use this function")
+
 
 
 def unknown(bot, update):
@@ -353,7 +359,7 @@ unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
 
 while(1):
-	time.sleep(300)
+	time.sleep(10)
 	volume_24 = requests.get('https://api.coinmarketcap.com/v1/global').json()
 	eth_json = requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum').json()
 	btc_json = requests.get('https://api.coinmarketcap.com/v1/ticker/bitcoin').json()
@@ -364,6 +370,7 @@ while(1):
 	if(len(lines)==0):
 		num_lines=1
 	for c in range (0, num_lines):
+			time.sleep(.100)
 			file_volume = open("volume.txt", "r")
 			line_1vol = file_volume.readline()
 			file_volume.close()
@@ -390,21 +397,30 @@ while(1):
 			else:
 				if(int(volume_24['total_24h_volume_usd'])<=int(max_volume)*0.8):
 					if(int(lines[c].split(" ")[1])==1):
-						bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Volume 24h: $ " + str(int(volume_24['total_24h_volume_usd']))	+ "\nmax value volume 24h: $" + str(max_volume) + "\n-20%")			
+						try:
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Volume 24h: $ " + str(int(volume_24['total_24h_volume_usd']))	+ "\nmax value volume 24h: $" + str(max_volume) + "\n-20%")
+						except Unauthorized:
+							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")			
 					max_volume = int(volume_24['total_24h_volume_usd'])
 			if(float(btc_json[0]['price_usd'])>float(max_price_btc)):
 				max_price_btc = float(btc_json[0]['price_usd'])					
 			else:
 				if(float(btc_json[0]['price_usd'])<=float(max_price_btc)*0.8):
 					if(int(lines[c].split(" ")[1])==1):
-						bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price BTC: $ "+ btc_json[0]	['price_usd'] + "\nMax price BTC: $ " + str(max_price_btc) + "\n-20%")
+						try:
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price BTC: $ "+ btc_json[0]	['price_usd'] + "\nMax price BTC: $ " + str(max_price_btc) + "\n-20%")
+						except Unauthorized:
+							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")
 					max_price_btc = float(btc_json[0]['price_usd'])					
 			if(float(eth_json[0]['price_usd'])>float(max_price_eth)):
 				max_price_eth = float(eth_json[0]['price_usd'])							
 			else:
 				if(float(eth_json[0]['price_usd'])<=float(max_price_eth)*0.8):
 					if(int(lines[c].split(" ")[1])==1):
-						bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price ETH: $ " + eth_json[0]	['price_usd'] + "\nMax price ETH: $ " + str(max_price_eth) + "\n-20%")					
+						try:
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price ETH: $ " + eth_json[0]	['price_usd'] + "\nMax price ETH: $ " + str(max_price_eth) + "\n-20%")
+						except Unauthorized:
+							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")					
 					max_price_eth = float(eth_json[0]['price_usd'])				
 	file_vol_out1 = open("volume.txt", "w")
 	file_vol_out1.write(str(int(max_volume)))
