@@ -248,7 +248,7 @@ def setuser(bot, update, args):
 					file_user_w.writelines(line_user[c])
 			file_user_w.close()
 			if(x==0):
-				bot.send_message(chat_id = update.message.chat_id, text="User " + ingresso[0] + " not founded")
+				bot.send_message(chat_id = update.message.chat_id, text="User " + ingresso[0] + " is not found")
 		else:
 			bot.send_message(chat_id = update.message.chat_id, text="Insert parameter 1 (username), parameter 2 (1 start/0 stop)")
 	else:
@@ -283,7 +283,7 @@ def ban(bot, update, args):
 						file_user_kill.writelines(line[i])
 			file_user_kill.close()
 			if(kill==0):
-				bot.send_message(chat_id=update.message.chat_id, text="User " + ingresso[0] + " are not in database")
+				bot.send_message(chat_id=update.message.chat_id, text="User " + ingresso[0] + " is not in database")
 		else:
 			bot.send_message(chat_id=update.message.chat_id, text="Inserire 1 parametro (username to cancel)")
 	else:
