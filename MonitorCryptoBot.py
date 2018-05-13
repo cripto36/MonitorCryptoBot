@@ -4,10 +4,21 @@ import json
 import requests
 import logging
 import time
+import re
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.error import Unauthorized
+
+
+
+def comma_me(amount):
+    orig = amount
+    new = re.sub("^(-?\d+)(\d{3})", '\g<1>,\g<2>', amount)
+    if orig == new:
+        return new
+    else:
+        return comma_me(new)
 
 
 
@@ -59,7 +70,7 @@ def max(bot, update):
 		max_eth=eth_json_max[0]['price_usd']
 	else:
 		max_eth=line_eth
-	bot.send_message(chat_id=update.message.chat_id, text="Max BTC: " + "$ " + str(max_btc) + "\n" + "Max ETH: " + "$ " + str(max_eth) + "\n" + "Max VOL 24H: " + "$" + str(int(max_vol)))
+	bot.send_message(chat_id=update.message.chat_id, text="Max BTC: " + "$ " + comma_me(str(max_btc)) + "\n" + "Max ETH: " + "$ " + comma_me(str(max_eth)) + "\n" + "Max VOL 24H: " + "$ " + comma_me(str(int(max_vol))))
 
 
 def now(bot, update):
@@ -90,7 +101,7 @@ def now(bot, update):
 	percent_from_max_btc = ((float(btc_json_now[0]['price_usd'])/float(max_btc_now))-1)*100
 	percent_from_max_eth = ((float(eth_json_now[0]['price_usd'])/float(max_eth_now))-1)*100
 	percent_from_max_vol = ((float(volume_24_now['total_24h_volume_usd'])/float(max_volume_now))-1)*100
-	bot.send_message(chat_id=update.message.chat_id, text="BITCOIN: $ " + btc_json_now[0]['price_usd'] + "\nPercentage from max: " + str("%.2f" % percent_from_max_btc) + "%" +"\n\n" + "ETHEREUM: $ " + eth_json_now[0]['price_usd'] + "\nPercentage from max: " + str("%.2f" % percent_from_max_eth) + "%" + "\n\n" +  "VOLUME 24H: $" + str(int(volume_24_now['total_24h_volume_usd'])) + "\nPercentage from max: " + str("%.2f" % percent_from_max_vol) + "%")
+	bot.send_message(chat_id=update.message.chat_id, text="BITCOIN: $ " + comma_me(btc_json_now[0]['price_usd']) + "\nPercentage from max: " + str("%.2f" % percent_from_max_btc) + "%" +"\n\n" + "ETHEREUM: $ " + comma_me(eth_json_now[0]['price_usd']) + "\nPercentage from max: " + str("%.2f" % percent_from_max_eth) + "%" + "\n\n" +  "VOLUME 24H: $ " + comma_me(str(int(volume_24_now['total_24h_volume_usd']))) + "\nPercentage from max: " + str("%.2f" % percent_from_max_vol) + "%")
 	
 
 def stop(bot, update):
@@ -142,7 +153,7 @@ def resetmax(bot, update, args):
 def setmax(bot, update, args):
 	if(int(update.message.chat_id) == myid().youridtelegram):
 		ingresso = ' '.join(args).split(" ")
-		if(len(ingresso)==2 and float(ingresso[1])):
+		if(len(ingresso)==2 and float(ingresso[1]) and (ingresso[0]=="btc" or ingresso[0]=="eth" or ingresso[0]=="vol")):
 			if(ingresso[0] == "btc"):
 				file_btc = open("price_btc.txt", "w")
 				file_btc.write(ingresso[1])
@@ -296,18 +307,19 @@ def cap(bot, update):
 def updatebot(bot, update, args):
 	if(int(update.message.chat_id) == myid().youridtelegram):
 		ingresso = ' '.join(args).split(" ")
-		if(len(ingresso)==1 and ingresso[0]=="confirm"):
+		phrase = ' '.join(args)
+		if(len(ingresso)>1 and ingresso[0]=="confirm"):
 			file_user = open("user.txt", "r")
 			lines = file_user.readlines()
 			file_user.close()
 			for c in range (0, len(lines)):
-				time.sleep(.100)
+				time.sleep(.200)
 				try:
-					bot.send_message(chat_id=lines[c].split(" ")[0], text="Bot updated, type /help for info")
+					bot.send_message(chat_id=lines[c].split(" ")[0], text="Bot updated, type /help for info\nUPDATE: " + str(phrase.split("confirm ")[1]))
 				except Unauthorized:
 					bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")
 		else:
-			bot.send_message(chat_id=update.message.chat_id, text="Insert parameter 1 = confirm")
+			bot.send_message(chat_id=update.message.chat_id, text="Insert parameter 1 = confirm, parameter 2 = message")
 	else:
 		bot.send_message(chat_id=update.message.chat_id, text="You are not able to use this function")
 
@@ -370,7 +382,7 @@ while(1):
 	if(len(lines)==0):
 		num_lines=1
 	for c in range (0, num_lines):
-			time.sleep(.100)
+			time.sleep(.200)
 			file_volume = open("volume.txt", "r")
 			line_1vol = file_volume.readline()
 			file_volume.close()
@@ -398,7 +410,7 @@ while(1):
 				if(int(volume_24['total_24h_volume_usd'])<=int(max_volume)*0.8):
 					if(int(lines[c].split(" ")[1])==1):
 						try:
-							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Volume 24h: $ " + str(int(volume_24['total_24h_volume_usd']))	+ "\nmax value volume 24h: $" + str(max_volume) + "\n-20%")
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current Total Volume 24h: $ " + comma_me(str(int(volume_24['total_24h_volume_usd'])))	+ "\nMax value volume 24h: $" + comma_me(str(max_volume)) + "\n-20% from max")
 						except Unauthorized:
 							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")			
 					max_volume = int(volume_24['total_24h_volume_usd'])
@@ -408,7 +420,7 @@ while(1):
 				if(float(btc_json[0]['price_usd'])<=float(max_price_btc)*0.8):
 					if(int(lines[c].split(" ")[1])==1):
 						try:
-							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price BTC: $ "+ btc_json[0]	['price_usd'] + "\nMax price BTC: $ " + str(max_price_btc) + "\n-20%")
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price BTC: $ "+ comma_me(btc_json[0]	['price_usd']) + "\nMax price BTC: $ " + comma_me(str(max_price_btc)) + "\n-20% from max")
 						except Unauthorized:
 							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")
 					max_price_btc = float(btc_json[0]['price_usd'])					
@@ -418,7 +430,7 @@ while(1):
 				if(float(eth_json[0]['price_usd'])<=float(max_price_eth)*0.8):
 					if(int(lines[c].split(" ")[1])==1):
 						try:
-							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price ETH: $ " + eth_json[0]	['price_usd'] + "\nMax price ETH: $ " + str(max_price_eth) + "\n-20%")
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price ETH: $ " + comma_me(eth_json[0]	['price_usd']) + "\nMax price ETH: $ " + comma_me(str(max_price_eth)) + "\n-20% from max")
 						except Unauthorized:
 							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")					
 					max_price_eth = float(eth_json[0]['price_usd'])				
