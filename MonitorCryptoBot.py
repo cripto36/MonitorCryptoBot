@@ -5,6 +5,7 @@ import requests
 import logging
 import time
 import re
+from datetime import datetime
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
@@ -19,6 +20,7 @@ def comma_me(amount):
         return new
     else:
         return comma_me(new)
+
 
 
 
@@ -176,9 +178,9 @@ def setmax(bot, update, args):
 		
 def help(bot, update):
 	if(int(update.message.chat_id) == myid().youridtelegram):
-		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start alerts and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max price last period\n/now Current value\n/cap Total Market Cap $\n/setmax set max BTC/ETH/VOL24H\n/resetmax max BTC/ETH/VOL24H=0\n/resetuser reset users\n/stat View users use bot\n/suicide left bot\n/setuser set user alert\n/ban cancel a user from bot\n/updatebot send a message to users in db to self an update of bot")
+		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start alerts and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max price last period\n/now Current value\n/cap Total Market Cap $\n/setmax set max BTC/ETH/VOL24H\n/resetmax max BTC/ETH/VOL24H=0\n/resetuser reset users\n/stat View users use bot\n/suicide left bot\n/setuser set user alert\n/ban cancel a user from bot\n/updatebot send a message to users in db to self an update of bot\n/statusbot view status of bot\n/report send us a report\n/desc description of bot")
 	else:	
-		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start Alert and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max last period\n/now Current value\n/cap Total Market Cap $\n/stat view own state in database\n/suicide Left Bot")
+		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start Alert and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max last period\n/now Current value\n/cap Total Market Cap $\n/stat View own state in database\n/suicide Left Bot\n/statusbot View status of bot\n/report Send us a report\n/desc Description of bot")
 
 def stat(bot, update):
 	if(int(update.message.chat_id) == myid().youridtelegram):
@@ -323,15 +325,46 @@ def updatebot(bot, update, args):
 	else:
 		bot.send_message(chat_id=update.message.chat_id, text="You are not able to use this function")
 
+def statusbot(bot, update):
+	if(dateupdate!="No Date"):
+		bot.send_message(chat_id=update.message.chat_id, text="MonitorCryptoBot updates itself every 5 minutes, if range between current time and last update MonitorCryptoBot is every 5 minutes. You can send a report about some malfunction  or some ideas of developement of MonitorCryptoBot by /report\n\n" + "Current time (UTC)\n" + str(datetime.utcnow()).split(" ")[0] + "\n" + str(datetime.utcnow()).split(" ")[1].split(":")[0] + ":" + str(datetime.utcnow()).split(" ")[1].split(":")[1] + "\n\nLast update bot (UTC)\n" + str(dateupdate).split(" ")[0] + "\n" + str(dateupdate).split(" ")[1].split(":")[0] + ":" + str(dateupdate).split(" ")[1].split(":")[1])
+	else:
+		bot.send_message(chat_id=update.message.chat_id, text="MonitorCryptoBot updates itself every 5 minutes, if range between current time and last update MonitorCryptoBot is every 5 minutes. You can send a report about some malfunction  or some ideas of developement of MonitorCryptoBot by /report\n\n" + "Current time (UTC)\n" + str(datetime.utcnow()).split(" ")[0] + "\n" + str(datetime.utcnow()).split(" ")[1].split(":")[0] + ":" + str(datetime.utcnow()).split(" ")[1].split(":")[1] + "\n\nLast update bot (UTC)\n" + dateupdate)
+		
+
+
+def report(bot, update, args):
+	len_message = ' '.join(args).split(" ")
+	if(len(len_message)>=1 and len_message[0]!=""):
+		message = ' '.join(args)
+		bot.send_message(chat_id = myid().youridtelegram, text = "You have received a report from @" + str(update.message.from_user.username) + "\n\nMESSAGE: " + str(message))
+		time.sleep(1)
+		bot.send_message(chat_id = update.message.chat_id, text = "Report sent successfully\n\nYOUR REPORT: " + str(message)) 
+	else:
+		bot.send_message(chat_id = update.message.chat_id, text = "Please send:\n/report reportmessage_tosend")
+
+
+
+def desc(bot, update):
+	bot.send_message(chat_id = update.message.chat_id, text = "This bot was created to monitor the performance of Bitcoin, Ethereum and the Volume24h of the marketcap. You can enable Alerts that calculate the difference between the maximum price and the current price, if the difference is <-20% you are contacted by the bot with this warning, same for volume 24 h.\nYou can of course disable the Alerts and know when you want in real time the price of Btc and Eth. Type /help after starting.\n\nBot on Github https://github.com/cripto36/MonitorCryptoBot")
+
 
 
 def unknown(bot, update):
-    bot.sendMessage(chat_id=update.message.chat_id, text="Unknown command, type /help to see possible choices.")
+    bot.send_message(chat_id=update.message.chat_id, text="Unknown command, type /help to see possible choices.")
+
+
 
 class myid:
-	youridtelegram=int(YOUR ID TELEGRAM)
-	yourtokenbot='YOUR TOKEN BOT'
+	youridtelegram=int(YOUR_ID_TELEGRAM)
+	yourtokenbot='YOUR_TOKEN_BOT'
 	pass
+
+
+
+class dateupdate:
+	pass
+
 
 
 bot = telegram.Bot(token=myid().yourtokenbot)
@@ -367,8 +400,16 @@ cap_handler = CommandHandler('cap', cap)
 dispatcher.add_handler(cap_handler)
 updatebot_handler = CommandHandler('updatebot', updatebot, pass_args=True)
 dispatcher.add_handler(updatebot_handler)
+statusbot_handler = CommandHandler('statusbot', statusbot)
+dispatcher.add_handler(statusbot_handler)
+report_handler = CommandHandler('report', report, pass_args=True)
+dispatcher.add_handler(report_handler)
+desc_handler = CommandHandler('desc', desc)
+dispatcher.add_handler(desc_handler)
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
+
+dateupdate="No Date"
 
 while(1):
 	time.sleep(300)
@@ -443,4 +484,4 @@ while(1):
 	file_eth_out1 = open("price_eth.txt", "w")
 	file_eth_out1.write(str(max_price_eth))
 	file_eth_out1.close()							
-
+	dateupdate = datetime.utcnow()
