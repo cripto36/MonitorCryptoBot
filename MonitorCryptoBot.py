@@ -103,7 +103,7 @@ def now(bot, update):
 	percent_from_max_btc = ((float(btc_json_now[0]['price_usd'])/float(max_btc_now))-1)*100
 	percent_from_max_eth = ((float(eth_json_now[0]['price_usd'])/float(max_eth_now))-1)*100
 	percent_from_max_vol = ((float(volume_24_now['total_24h_volume_usd'])/float(max_volume_now))-1)*100
-	bot.send_message(chat_id=update.message.chat_id, text="BITCOIN: $ " + comma_me(btc_json_now[0]['price_usd']) + "\nPercentage from max: " + str("%.2f" % percent_from_max_btc) + "%" +"\n\n" + "ETHEREUM: $ " + comma_me(eth_json_now[0]['price_usd']) + "\nPercentage from max: " + str("%.2f" % percent_from_max_eth) + "%" + "\n\n" +  "VOLUME 24H: $ " + comma_me(str(int(volume_24_now['total_24h_volume_usd']))) + "\nPercentage from max: " + str("%.2f" % percent_from_max_vol) + "%")
+	bot.send_message(chat_id=update.message.chat_id, text="BITCOIN: $ " + comma_me(btc_json_now[0]['price_usd']) + "\nPercentage from max: " + str("%.2f" % percent_from_max_btc) + "%\nETHEREUM: $ " + comma_me(eth_json_now[0]['price_usd']) + "\nPercentage from max: " + str("%.2f" % percent_from_max_eth) + "%\n" +  "VOLUME 24H: $ " + comma_me(str(int(volume_24_now['total_24h_volume_usd']))) + "\nPercentage from max: " + str("%.2f" % percent_from_max_vol) + "%")
 	
 
 def stop(bot, update):
@@ -304,7 +304,8 @@ def ban(bot, update, args):
 
 def cap(bot, update):
 	capitalization = requests.get('https://api.coinmarketcap.com/v1/global').json()
-	bot.send_message(chat_id=update.message.chat_id, text="Total Market Cap: $" + str(int(capitalization['total_market_cap_usd'])))
+	vol_cap = (float(capitalization['total_24h_volume_usd'])/float(capitalization['total_market_cap_usd']))*100
+	bot.send_message(chat_id=update.message.chat_id, text="Total Market Cap: $ " + comma_me(str(int(capitalization['total_market_cap_usd']))) + "\nTotal Volume 24 h: $ " + comma_me(str(int(capitalization['total_24h_volume_usd']))) + "\n% Vol On Total Market Cap: " + str("%.2f" % vol_cap) + "%")
 
 def updatebot(bot, update, args):
 	if(int(update.message.chat_id) == myid().youridtelegram):
@@ -317,7 +318,7 @@ def updatebot(bot, update, args):
 			for c in range (0, len(lines)):
 				time.sleep(.200)
 				try:
-					bot.send_message(chat_id=lines[c].split(" ")[0], text="Bot updated, type /help for info\nUPDATE: " + str(phrase.split("confirm ")[1]))
+					bot.send_message(chat_id=lines[c].split(" ")[0], text="UPDATE: " + str(phrase.split("confirm ")[1]))
 				except Unauthorized:
 					bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")
 		else:
@@ -327,9 +328,9 @@ def updatebot(bot, update, args):
 
 def statusbot(bot, update):
 	if(dateupdate!="No Date"):
-		bot.send_message(chat_id=update.message.chat_id, text="MonitorCryptoBot updates itself every 5 minutes, if range between current time and last update MonitorCryptoBot is every 5 minutes. You can send a report about some malfunction  or some ideas of developement of MonitorCryptoBot by /report\n\n" + "Current time (UTC)\n" + str(datetime.utcnow()).split(" ")[0] + "\n" + str(datetime.utcnow()).split(" ")[1].split(":")[0] + ":" + str(datetime.utcnow()).split(" ")[1].split(":")[1] + "\n\nLast update bot (UTC)\n" + str(dateupdate).split(" ")[0] + "\n" + str(dateupdate).split(" ")[1].split(":")[0] + ":" + str(dateupdate).split(" ")[1].split(":")[1])
+		bot.send_message(chat_id=update.message.chat_id, text="MonitorCryptoBot updates itself every 5 minutes, if range between current time and last update MonitorCryptoBot is every > 5 minutes, please send us a report. You can send a report about some malfunction  or some ideas of developement of MonitorCryptoBot by /report\n\n" + "Current time (UTC)\n" + str(datetime.utcnow()).split(" ")[0] + "\n" + str(datetime.utcnow()).split(" ")[1].split(":")[0] + ":" + str(datetime.utcnow()).split(" ")[1].split(":")[1] + "\n\nLast update bot (UTC)\n" + str(dateupdate).split(" ")[0] + "\n" + str(dateupdate).split(" ")[1].split(":")[0] + ":" + str(dateupdate).split(" ")[1].split(":")[1])
 	else:
-		bot.send_message(chat_id=update.message.chat_id, text="MonitorCryptoBot updates itself every 5 minutes, if range between current time and last update MonitorCryptoBot is every 5 minutes. You can send a report about some malfunction  or some ideas of developement of MonitorCryptoBot by /report\n\n" + "Current time (UTC)\n" + str(datetime.utcnow()).split(" ")[0] + "\n" + str(datetime.utcnow()).split(" ")[1].split(":")[0] + ":" + str(datetime.utcnow()).split(" ")[1].split(":")[1] + "\n\nLast update bot (UTC)\n" + dateupdate)
+		bot.send_message(chat_id=update.message.chat_id, text="MonitorCryptoBot updates itself every 5 minutes, if range between current time and last update MonitorCryptoBot is > 5 minutes, please send us a report. You can send a report about some malfunction  or some ideas of developement of MonitorCryptoBot by /report\n\n" + "Current time (UTC)\n" + str(datetime.utcnow()).split(" ")[0] + "\n" + str(datetime.utcnow()).split(" ")[1].split(":")[0] + ":" + str(datetime.utcnow()).split(" ")[1].split(":")[1] + "\n\nLast update bot (UTC)\n" + dateupdate)
 		
 
 
@@ -346,7 +347,30 @@ def report(bot, update, args):
 
 
 def desc(bot, update):
-	bot.send_message(chat_id = update.message.chat_id, text = "This bot was created to monitor the performance of Bitcoin, Ethereum and the Volume24h of the marketcap. You can enable Alerts that calculate the difference between the maximum price and the current price, if the difference is <-20% you are contacted by the bot with this warning, same for volume 24 h.\nYou can of course disable the Alerts and know when you want in real time the price of Btc and Eth. Type /help after starting.\n\nBot on Github https://github.com/cripto36/MonitorCryptoBot")
+	bot.send_message(chat_id = update.message.chat_id, text = "This bot was created to monitor the performance of Bitcoin, Ethereum and the Volume24h of the marketcap. You can enable Alerts that calculate the difference between the maximum price and the current price, if the difference is <-10% you are contacted by the bot with this warning, same for volume 24 h.\nYou can of course disable the Alerts and know when you want in real time the price of Btc and Eth. Type /help after starting.\n\nBot on Github https://github.com/cripto36/MonitorCryptoBot")
+
+def btc(bot, update):
+	btc_json = requests.get('https://api.coinmarketcap.com/v1/ticker/bitcoin').json()
+	capital = requests.get('https://api.coinmarketcap.com/v1/global').json()
+	btc_mktcap = btc_json[0]['market_cap_usd']
+	btc_price = btc_json[0]['price_usd']
+	btc_vol = btc_json[0]['24h_volume_usd']
+	vol_perc = (float(btc_vol)/float(btc_mktcap))*100
+	dominance = (float(btc_mktcap)/float(capital['total_market_cap_usd']))*100
+	volatility = btc_json[0]['percent_change_24h']
+	bot.send_message(chat_id = update.message.chat_id, text = "Bitcoin (BTC):\nPrice: $ " + comma_me(str(btc_price)) + "\nMarket Cap: $ " + comma_me(str(btc_mktcap)) + "\nVol 24 h: $ " + comma_me(str(btc_vol)) + "\n% Vol On Marketcap: " + str("%.2f" % vol_perc) + "%\nDominance: " + str("%.0f" % dominance) + "%\nChange 24h: " + str(volatility) + "%")
+
+def eth(bot, update):
+	eth_json = requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum').json()
+	capital = requests.get('https://api.coinmarketcap.com/v1/global').json()
+	eth_mktcap = eth_json[0]['market_cap_usd']
+	eth_price = eth_json[0]['price_usd']
+	eth_vol = eth_json[0]['24h_volume_usd']
+	vol_perc = (float(eth_vol)/float(eth_mktcap))*100
+	dominance = (float(eth_mktcap)/float(capital['total_market_cap_usd']))*100
+	volatility = eth_json[0]['percent_change_24h']
+	bot.send_message(chat_id = update.message.chat_id, text = "Ethereum (ETH):\nPrice: $ " + comma_me(str(eth_price)) + "\nMarket Cap: $ " + comma_me(str(eth_mktcap)) + "\nVol 24 h: $ " + comma_me(str(eth_vol)) + "\n% Vol On Marketcap: " + str("%.2f" % vol_perc) + "%\nDominance: " + str("%.0f" % dominance) + "%\nChange 24h: " + str(volatility) + "%") 
+	
 
 
 
@@ -406,6 +430,10 @@ report_handler = CommandHandler('report', report, pass_args=True)
 dispatcher.add_handler(report_handler)
 desc_handler = CommandHandler('desc', desc)
 dispatcher.add_handler(desc_handler)
+btc_handler = CommandHandler('btc', btc)
+dispatcher.add_handler(btc_handler)
+eth_handler = CommandHandler('eth', eth)
+dispatcher.add_handler(eth_handler)
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
 
@@ -414,8 +442,11 @@ dateupdate="No Date"
 while(1):
 	time.sleep(300)
 	volume_24 = requests.get('https://api.coinmarketcap.com/v1/global').json()
+	time.sleep(1)
 	eth_json = requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum').json()
+	time.sleep(1)
 	btc_json = requests.get('https://api.coinmarketcap.com/v1/ticker/bitcoin').json()
+	time.sleep(1)
 	file_main = open("user.txt", "r")
 	lines = file_main.readlines()
 	file_main.close()
@@ -448,30 +479,30 @@ while(1):
 			if(int(volume_24['total_24h_volume_usd'])>int(max_volume)):	
 				max_volume = int(volume_24['total_24h_volume_usd'])
 			else:
-				if(int(volume_24['total_24h_volume_usd'])<=int(max_volume)*0.8):
+				if(int(volume_24['total_24h_volume_usd'])<=int(max_volume)*0.9):
 					if(int(lines[c].split(" ")[1])==1):
 						try:
-							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current Total Volume 24h: $ " + comma_me(str(int(volume_24['total_24h_volume_usd'])))	+ "\nMax value volume 24h: $" + comma_me(str(max_volume)) + "\n-20% from max")
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current Total Volume 24h: $ " + comma_me(str(int(volume_24['total_24h_volume_usd'])))	+ "\nMax value volume 24h: $" + comma_me(str(max_volume)) + "\n-10% from max")
 						except Unauthorized:
 							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")			
 					max_volume = int(volume_24['total_24h_volume_usd'])
 			if(float(btc_json[0]['price_usd'])>float(max_price_btc)):
 				max_price_btc = float(btc_json[0]['price_usd'])					
 			else:
-				if(float(btc_json[0]['price_usd'])<=float(max_price_btc)*0.8):
+				if(float(btc_json[0]['price_usd'])<=float(max_price_btc)*0.9):
 					if(int(lines[c].split(" ")[1])==1):
 						try:
-							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price BTC: $ "+ comma_me(btc_json[0]	['price_usd']) + "\nMax price BTC: $ " + comma_me(str(max_price_btc)) + "\n-20% from max")
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price BTC: $ "+ comma_me(btc_json[0]	['price_usd']) + "\nMax price BTC: $ " + comma_me(str(max_price_btc)) + "\n-10% from max")
 						except Unauthorized:
 							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")
 					max_price_btc = float(btc_json[0]['price_usd'])					
 			if(float(eth_json[0]['price_usd'])>float(max_price_eth)):
 				max_price_eth = float(eth_json[0]['price_usd'])							
 			else:
-				if(float(eth_json[0]['price_usd'])<=float(max_price_eth)*0.8):
+				if(float(eth_json[0]['price_usd'])<=float(max_price_eth)*0.9):
 					if(int(lines[c].split(" ")[1])==1):
 						try:
-							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price ETH: $ " + comma_me(eth_json[0]	['price_usd']) + "\nMax price ETH: $ " + comma_me(str(max_price_eth)) + "\n-20% from max")
+							bot.send_message(chat_id=lines[c].split(" ")[0], text="Alert! Current price ETH: $ " + comma_me(eth_json[0]	['price_usd']) + "\nMax price ETH: $ " + comma_me(str(max_price_eth)) + "\n-10% from max")
 						except Unauthorized:
 							bot.send_message(chat_id=myid().youridtelegram, text="User @" + lines[c].split(" ")[2].split("\n")[0] + " stopped bot.")					
 					max_price_eth = float(eth_json[0]['price_usd'])				
