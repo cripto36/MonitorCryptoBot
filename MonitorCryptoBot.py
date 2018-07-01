@@ -178,9 +178,9 @@ def setmax(bot, update, args):
 		
 def help(bot, update):
 	if(int(update.message.chat_id) == myid().youridtelegram):
-		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start alerts and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max price last period\n/now Current value\n/cap Total Market Cap $\n/setmax set max BTC/ETH/VOL24H\n/resetmax max BTC/ETH/VOL24H=0\n/resetuser reset users\n/stat View users use bot\n/suicide left bot\n/setuser set user alert\n/ban cancel a user from bot\n/updatebot send a message to users in db to self an update of bot\n/statusbot view status of bot\n/report send us a report\n/desc description of bot")
+		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start alerts and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max price last period\n/now Current value\n/cap Total Market Cap $\n/btc Info Bitcoin\n/eth Info Ethereum\n/setmax set max BTC/ETH/VOL24H\n/resetmax max BTC/ETH/VOL24H=0\n/resetuser reset users\n/stat View users use bot\n/suicide left bot\n/setuser set user alert\n/ban cancel a user from bot\n/updatebot send a message to users in db to self an update of bot\n/statusbot view status of bot\n/report send us a report\n/desc description of bot")
 	else:	
-		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start Alert and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max last period\n/now Current value\n/cap Total Market Cap $\n/stat View own state in database\n/suicide Left Bot\n/statusbot View status of bot\n/report Send us a report\n/desc Description of bot")
+		bot.send_message(chat_id = update.message.chat_id, text="/help info\n/start Start Alert and registration on bot\n/stop No Alerts\n/max price BTC/ETH/VOL24H Max last period\n/now Current value\n/cap Total Market Cap $\n/btc Info Bitcoin\n/eth Info Ethereum\n/stat View own state in database\n/suicide Left Bot\n/statusbot View status of bot\n/report Send us a report\n/desc Description of bot")
 
 def stat(bot, update):
 	if(int(update.message.chat_id) == myid().youridtelegram):
@@ -350,27 +350,30 @@ def desc(bot, update):
 	bot.send_message(chat_id = update.message.chat_id, text = "This bot was created to monitor the performance of Bitcoin, Ethereum and the Volume24h of the marketcap. You can enable Alerts that calculate the difference between the maximum price and the current price, if the difference is <-10% you are contacted by the bot with this warning, same for volume 24 h.\nYou can of course disable the Alerts and know when you want in real time the price of Btc and Eth. Type /help after starting.\n\nBot on Github https://github.com/cripto36/MonitorCryptoBot")
 
 def btc(bot, update):
-	btc_json = requests.get('https://api.coinmarketcap.com/v1/ticker/bitcoin').json()
-	capital = requests.get('https://api.coinmarketcap.com/v1/global').json()
-	btc_mktcap = btc_json[0]['market_cap_usd']
-	btc_price = btc_json[0]['price_usd']
-	btc_vol = btc_json[0]['24h_volume_usd']
-	vol_perc = (float(btc_vol)/float(btc_mktcap))*100
-	dominance = (float(btc_mktcap)/float(capital['total_market_cap_usd']))*100
-	volatility = btc_json[0]['percent_change_24h']
-	bot.send_message(chat_id = update.message.chat_id, text = "Bitcoin (BTC):\nPrice: $ " + comma_me(str(btc_price)) + "\nMarket Cap: $ " + comma_me(str(btc_mktcap)) + "\nVol 24 h: $ " + comma_me(str(btc_vol)) + "\n% Vol On Marketcap: " + str("%.2f" % vol_perc) + "%\nDominance: " + str("%.0f" % dominance) + "%\nChange 24h: " + str(volatility) + "%")
+        btc_json = requests.get('https://api.coinmarketcap.com/v1/ticker/bitcoin').json()
+        capital = requests.get('https://api.coinmarketcap.com/v1/global').json()
+        btc_mktcap = btc_json[0]['market_cap_usd']
+        btc_price = btc_json[0]['price_usd']
+        btc_vol = float(btc_json[0]['24h_volume_usd'])
+        vol_perc = (float(btc_vol)/float(btc_mktcap))*100
+        dominance = (float(btc_mktcap)/float(capital['total_market_cap_usd']))*100
+        volatility = btc_json[0]['percent_change_24h']
+        bot.send_message(chat_id = update.message.chat_id, text = "Bitcoin (BTC):\nPrice: $ " + comma_me(str(btc_price)) + "\nMarket Cap: $ " + comma_me(str(btc_mktcap)) + "\nVol 24 h: $ " + comma_me(str("%.0f" % btc_vol)) + "\n% Vol On Marketcap: " + str("%.2f" % vol_perc) + "%\nDominance: " + str("%.1f" % dominance) + "%\nChange 24h: " + str(volatility) + "%")
+
+
 
 def eth(bot, update):
-	eth_json = requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum').json()
-	capital = requests.get('https://api.coinmarketcap.com/v1/global').json()
-	eth_mktcap = eth_json[0]['market_cap_usd']
-	eth_price = eth_json[0]['price_usd']
-	eth_vol = eth_json[0]['24h_volume_usd']
-	vol_perc = (float(eth_vol)/float(eth_mktcap))*100
-	dominance = (float(eth_mktcap)/float(capital['total_market_cap_usd']))*100
-	volatility = eth_json[0]['percent_change_24h']
-	bot.send_message(chat_id = update.message.chat_id, text = "Ethereum (ETH):\nPrice: $ " + comma_me(str(eth_price)) + "\nMarket Cap: $ " + comma_me(str(eth_mktcap)) + "\nVol 24 h: $ " + comma_me(str(eth_vol)) + "\n% Vol On Marketcap: " + str("%.2f" % vol_perc) + "%\nDominance: " + str("%.0f" % dominance) + "%\nChange 24h: " + str(volatility) + "%") 
-	
+        eth_json = requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum').json()
+        capital = requests.get('https://api.coinmarketcap.com/v1/global').json()
+        eth_mktcap = eth_json[0]['market_cap_usd']
+        eth_price = eth_json[0]['price_usd']
+        eth_vol = float(eth_json[0]['24h_volume_usd'])
+        vol_perc = (float(eth_vol)/float(eth_mktcap))*100
+        dominance = (float(eth_mktcap)/float(capital['total_market_cap_usd']))*100
+        volatility = eth_json[0]['percent_change_24h']
+        bot.send_message(chat_id = update.message.chat_id, text = "Ethereum (ETH):\nPrice: $ " + comma_me(str(eth_price)) + "\nMarket Cap: $ " + comma_me(str(eth_mktcap)) + "\nVol 24 h: $ " + comma_me(str("%.0f" % eth_vol)) + "\n% Vol On Marketcap: " + str("%.2f" % vol_perc) + "%\nDominance: " + str("%.1f" % dominance) + "%\nChange 24h: " + str(volatility) + "%") 
+
+
 
 
 
